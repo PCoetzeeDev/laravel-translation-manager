@@ -1,6 +1,10 @@
-## Laravel 5 Translation Manager
+## Laravel Translation Manager
 
-### For Laravel 4, please use the [0.1 branch](https://github.com/barryvdh/laravel-translation-manager/tree/0.1)!
+[![Tests](https://github.com/barryvdh/laravel-translation-manager/actions/workflows/run-tests.yml/badge.svg)](https://github.com/barryvdh/laravel-translation-manager/actions)
+[![Packagist License](https://poser.pugx.org/barryvdh/laravel-translation-manager/license.png)](http://choosealicense.com/licenses/mit/)
+[![Latest Stable Version](https://poser.pugx.org/barryvdh/laravel-translation-manager/version.png)](https://packagist.org/packages/barryvdh/laravel-translation-manager)
+[![Total Downloads](https://poser.pugx.org/barryvdh/laravel-translation-manager/d/total.png)](https://packagist.org/packages/barryvdh/laravel-translation-manager)
+[![Fruitcake](https://img.shields.io/badge/Powered%20By-Fruitcake-b2bc35.svg)](https://fruitcake.nl/)
 
 This is a package to manage Laravel translation files.
 It does not replace the Translation system, only import/export the php files to a database and make them editable through a webinterface.
@@ -20,31 +24,42 @@ This way, translations can be saved in git history and no overhead is introduced
 
 Require this package in your composer.json and run composer update (or run `composer require barryvdh/laravel-translation-manager` directly):
 
-    "barryvdh/laravel-translation-manager": "0.2.x@dev"
+    composer require barryvdh/laravel-translation-manager
 
-After updating composer, add the ServiceProvider to the providers array in config/app.php
-
-    'Barryvdh\TranslationManager\ManagerServiceProvider',
 
 You need to run the migrations for this package.
 
-    $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=migrations
-    $ php artisan migrate
+```
+php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=migrations
+php artisan migrate
+```
 
 You need to publish the config file for this package. This will add the file `config/translation-manager.php`, where you can configure this package.
 
-    $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=config
+```
+php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=config
+```
 
 In order to edit the default template, the views must be published as well. The views will then be placed in `resources/views/vendor/translation-manager`.
 
-    $ php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=views
+```
+php artisan vendor:publish --provider="Barryvdh\TranslationManager\ManagerServiceProvider" --tag=views
+```
 
 Routes are added in the ServiceProvider. You can set the group parameters for the routes in the configuration.
 You can change the prefix or filter/middleware for the routes. If you want full customisation, you can extend the ServiceProvider and override the `map()` function.
 
 This example will make the translation manager available at `http://yourdomain.com/translations`
 
-### Laravel >= 5.2
+If you would like to use auto translation using Google Translate API, install https://github.com/tanmuhittin/laravel-google-translate
+
+``` 
+composer require tanmuhittin/laravel-google-translate
+php artisan vendor:publish --provider=Tanmuhittin\LaravelGoogleTranslate\LaravelGoogleTranslateServiceProvider
+ ```
+
+
+### Middleware / Auth
 
 The configuration file by default only includes the `auth` middleware, but the latests changes in Laravel 5.2 makes it that session variables are only accessible when your route includes the `web` middleware. In order to make this package work on Laravel 5.2, you will have to change the route/middleware setting from the default 
 
@@ -85,7 +100,9 @@ You can also use the commands below.
 
 The import command will search through app/lang and load all strings in the database, so you can easily manage them.
 
-    $ php artisan translations:import
+```
+php artisan translations:import
+```
 
 Translation strings from app/lang/locale.json files will be imported to the __json_ group.
     
@@ -98,7 +115,9 @@ The Find command/button will look search for all php/twig files in the app direc
 The found keys will be added to the database, so they can be easily translated.
 This can be done through the webinterface, or via an Artisan command.
 
-    $ php artisan translations:find
+```
+php artisan translations:find
+```
     
 If your project uses translation strings as keys, these will be stored into then __json_ group. 
 
@@ -108,31 +127,36 @@ The export command will write the contents of the database back to app/lang php 
 This will overwrite existing translations and remove all comments, so make sure to backup your data before using.
 Supply the group name to define which groups you want to publish.
 
-    $ php artisan translations:export <group>
+```
+php artisan translations:export <group>
+```
 
 For example, `php artisan translations:export reminders` when you have 2 locales (en/nl), will write to `app/lang/en/reminders.php` and `app/lang/nl/reminders.php`
 
-To export translation strings as keys to JSON files , use the `--json` (or `-J`) option: `php artisan translations:import --json`. This will import every entries from the __json_ group.
+To export translation strings as keys to JSON files , use the `--json` (or `-J`) option: `php artisan translations:export --json`. This will import every entries from the __json_ group.
 
 ### Clean command
 
 The clean command will search for all translation that are NULL and delete them, so your interface is a bit cleaner. Note: empty translations are never exported.
 
-    $ php artisan translations:clean
+```
+php artisan translations:clean
+```
 
 ### Reset command
 
 The reset command simply clears all translation in the database, so you can start fresh (by a new import). Make sure to export your work if needed before doing this.
 
-    $ php artisan translations:reset
-
+```
+php artisan translations:reset
+```
 
 
 ### Detect missing translations
 
 Most translations can be found by using the Find command (see above), but in case you have dynamic keys (variables/automatic forms etc), it can be helpful to 'listen' to the missing translations.
 To detect missing translations, we can swap the Laravel TranslationServiceProvider with a custom provider.
-In your config/app.php, comment out the original TranslationServiceProvider and add the one from this package:
+In your `config/app.php`, comment out the original TranslationServiceProvider and add the one from this package:
 
     //'Illuminate\Translation\TranslationServiceProvider',
     'Barryvdh\TranslationManager\TranslationServiceProvider',
@@ -143,7 +167,7 @@ You shouldn't use this in production, just in development to translate your view
 
 ## TODO
 
-This package is still very alpha. Few thinks that are on the todo-list:
+This package is still very alpha. Few things that are on the todo-list:
 
     - Add locales/groups via webinterface
     - Improve webinterface (more selection/filtering, behavior of popup after save etc)

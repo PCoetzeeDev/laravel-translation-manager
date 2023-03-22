@@ -14,11 +14,12 @@ class CreateTranslationsTable extends Migration {
 	{
         Schema::create('ltm_translations', function(Blueprint $table)
         {
-            $table->increments('id');
+	    $table->collation = 'utf8mb4_bin';
+            $table->bigIncrements('id');
             $table->integer('status')->default(0);
             $table->string('locale');
             $table->string('group');
-            $table->string('key');
+            $table->text('key');
             $table->text('value')->nullable();
             $table->timestamps();
         });
